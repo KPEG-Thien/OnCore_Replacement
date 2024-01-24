@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OnCore_Replacement
 {
-	public class DataObjectByLoadSection
+	public class DataObjectByLoadWorkspace
 	{
 		public string PartOID {  get; set; }
 		public string PartName { get; set; }

@@ -95,7 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllData.cs" />
-    <Compile Include="DataObjectByLoadSection.cs" />
+    <Compile Include="DataObjectByLoadWorkspace.cs" />
     <Compile Include="DataNote.cs" />
     <Compile Include="DataNotePurpose.cs" />
     <Compile Include="DataNotePurposeHelper.cs" />

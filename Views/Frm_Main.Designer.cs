@@ -153,7 +153,7 @@
 			this.cbSelectOptionLoadData.DropDownWidth = 121;
 			this.cbSelectOptionLoadData.Items.AddRange(new object[] {
             "Data Base",
-            "Section"});
+            "Workspace"});
 			this.cbSelectOptionLoadData.Location = new System.Drawing.Point(133, 16);
 			this.cbSelectOptionLoadData.Name = "cbSelectOptionLoadData";
 			this.cbSelectOptionLoadData.Size = new System.Drawing.Size(121, 21);

@@ -305,17 +305,17 @@ namespace OnCore_Replacement.Views
 						DisableCellDataGridView();
 					}
 				}
-				else if (cbSelectOptionLoadData.SelectedItem.ToString() == "Section")
+				else if (cbSelectOptionLoadData.SelectedItem.ToString() == "Workspace")
 				{
 					Filter oFilter = new Filter();
 					oFilter.Definition.AddObjectType("Piping\\PipingFeatures");
 					BOCollection oWorkingcoll = ClientServiceProvider.WorkingSet.GetObjectsByFilter(oFilter, ClientServiceProvider.WorkingSet.ActiveConnection);
 					
-					List<DataObjectByLoadSection> dataObjectByLoadSectionList = new List<DataObjectByLoadSection>();
+					List<DataObjectByLoadWorkspace> dataObjectByLoadWorkspaceList = new List<DataObjectByLoadWorkspace>();
 
 					foreach (BusinessObject businessObject in oWorkingcoll)
 					{
-						DataObjectByLoadSection dataObject = new DataObjectByLoadSection();
+						DataObjectByLoadWorkspace dataObject = new DataObjectByLoadWorkspace();
 						AlongLegFeature alongLegFeature = businessObject as AlongLegFeature;
 						if (alongLegFeature != null)
 						{
@@ -339,13 +339,13 @@ namespace OnCore_Replacement.Views
 									dataObject.LineOID = pipeLine.ObjectID;
 									dataObject.LineName = routeFeature.Run.SystemParent.ToString();
 
-									dataObjectByLoadSectionList.Add(dataObject);
+									dataObjectByLoadWorkspaceList.Add(dataObject);
 								}
 							}
 						}
 					}
 
-					if (dataObjectByLoadSectionList != null)
+					if (dataObjectByLoadWorkspaceList != null)
 					{
 						if (dgvDataReplacement.Rows.Count > 0)
 						{
@@ -353,10 +353,10 @@ namespace OnCore_Replacement.Views
 							dgvDataReplacement.Rows.Clear();
 							dgvDataReplacement.Refresh();
 						}
-						for (int i = 0; i < dataObjectByLoadSectionList.Count; i++)
+						for (int i = 0; i < dataObjectByLoadWorkspaceList.Count; i++)
 						{
-							dgvDataReplacement.Rows.Add(0, "---", dataObjectByLoadSectionList[i].PartOID, dataObjectByLoadSectionList[i].PartName, dataObjectByLoadSectionList[i].OBJType, dataObjectByLoadSectionList[i].FeatOID
-								,dataObjectByLoadSectionList[i].Tag, dataObjectByLoadSectionList[i].TagAvailable, dataObjectByLoadSectionList[i].RunOID, dataObjectByLoadSectionList[i].RunName, dataObjectByLoadSectionList[i].LineOID, dataObjectByLoadSectionList[i].LineName);
+							dgvDataReplacement.Rows.Add(0, "---", dataObjectByLoadWorkspaceList[i].PartOID, dataObjectByLoadWorkspaceList[i].PartName, dataObjectByLoadWorkspaceList[i].OBJType, dataObjectByLoadWorkspaceList[i].FeatOID
+								,dataObjectByLoadWorkspaceList[i].Tag, dataObjectByLoadWorkspaceList[i].TagAvailable, dataObjectByLoadWorkspaceList[i].RunOID, dataObjectByLoadWorkspaceList[i].RunName, dataObjectByLoadWorkspaceList[i].LineOID, dataObjectByLoadWorkspaceList[i].LineName);
 
 						}
 					}
