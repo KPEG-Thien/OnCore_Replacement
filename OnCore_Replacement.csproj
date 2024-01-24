@@ -48,18 +48,23 @@
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Docking">
       <HintPath>..\..\Developer\.dll\Krypton-master\Bin\ComponentFactory.Krypton.Docking.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Navigator">
       <HintPath>..\..\Developer\.dll\Krypton-master\Bin\ComponentFactory.Krypton.Navigator.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Ribbon">
       <HintPath>..\..\Developer\.dll\Krypton-master\Bin\ComponentFactory.Krypton.Ribbon.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Toolkit">
       <HintPath>..\..\Developer\.dll\Krypton-master\Bin\ComponentFactory.Krypton.Toolkit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Workspace">
       <HintPath>..\..\Developer\.dll\Krypton-master\Bin\ComponentFactory.Krypton.Workspace.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Intergraph.CommonToolkit.Client">
       <HintPath>C:\Program Files (x86)\Smart3D\Core\Container\Bin\SxS\Intergraph\Intergraph.CommonToolkit.Client.dll</HintPath>
@@ -77,16 +82,20 @@
     <Reference Include="System.Xml" />
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Xamarin.Forms.5.0.0.2012\lib\netstandard2.0\Xamarin.Forms.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Xamarin.Forms.5.0.0.2012\lib\netstandard2.0\Xamarin.Forms.Platform.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Xamarin.Forms.5.0.0.2012\lib\netstandard2.0\Xamarin.Forms.Xaml.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllData.cs" />
+    <Compile Include="DataObjectByLoadSection.cs" />
     <Compile Include="DataNote.cs" />
     <Compile Include="DataNotePurpose.cs" />
     <Compile Include="DataNotePurposeHelper.cs" />
@@ -127,6 +136,16 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
+    </COMReference>
+    <COMReference Include="ROUTEENTITIESLib">
+      <Guid>{8894DA3B-9D6E-11D1-BE27-08003651A403}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>True</Private>
     </COMReference>
   </ItemGroup>
   <ItemGroup>

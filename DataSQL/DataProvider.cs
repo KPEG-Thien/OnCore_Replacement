@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using Xamarin.Forms;
 
 namespace OnCore_Replacement.DataSQL
 {
@@ -178,6 +179,29 @@ namespace OnCore_Replacement.DataSQL
 			}
 
 			return lists;
+		}
+
+		public string CheckTagAvailable(string sTangName)
+		{
+			string query = "select ic.Oid \r\n\t, case \r\n\t\twhen ic.TagNumber ='' then ic.GenericTagNumber\r\n\t\telse ic.TagNumber\r\n\tend as TagNumber\r\n\t from JInstrumentClass ic\r\n\twhere ic.TagNumber <> '' or ic.GenericTagNumber <> ''\r\n\tunion\r\n\tselect pc.Oid \r\n\t, case \r\n\t\twhen pc.TagNumber ='' then pc.GenericTagNumber\r\n\t\telse pc.TagNumber\r\n\tend as TagNumber\r\n\t from JPipingSpecialtyClass pc\r\n\twhere pc.TagNumber <> '' or pc.GenericTagNumber <> ''";
+			DataTable data = ExecuteQuery(AllData.DbName, query, new object[] { });
+			if (data != null) 
+			{
+				var result = data.AsEnumerable()
+					.Any(row => string.Equals(row.Field<string>("TagNumber"), sTangName, StringComparison.OrdinalIgnoreCase));
+				if (result)
+				{
+					return sTangName;
+				}
+				else
+				{
+					return "No";
+				}
+			}
+			else
+			{
+				return "No";
+			}
 		}
 	}
 }

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,8 +19,10 @@ using Ingr.SP3D.Common.Client;
 using Ingr.SP3D.Common.Client.Services;
 using Ingr.SP3D.Common.Middle;
 using Ingr.SP3D.Common.Middle.Services;
+using Ingr.SP3D.Common.Middle.Services.Hidden;
 using Ingr.SP3D.Route.Middle;
 using OnCore_Replacement.DataSQL;
+using ROUTEENTITIESLib;
 
 namespace OnCore_Replacement.Views
 {
@@ -44,13 +47,13 @@ namespace OnCore_Replacement.Views
 		//    Fuc replacing
 		private void btnReplaceObj_Click(object sender, EventArgs e)
 		{
-			LoadDataReplaceCompare();
+			//LoadDataReplaceCompare();
 			TransactionManager oTransactionManager = MiddleServiceProvider.TransactionMgr;
 			SP3DConnection oSP3DConnection = ClientServiceProvider.WorkingSet.ActiveConnection;
 			PlantConnection oPlantConnection = oSP3DConnection as PlantConnection;
 			List<DataStorageReplace> oListOBJReplaced = new List<DataStorageReplace>();
 			List<object> oListOBJCompare = new List<object>();
-
+			int indexRow = -1;
 			if (dgvDataReplaceCompare.Rows.Count > 0)
 			{
 				oListOBJCompare = GetUniqueValues(dgvDataReplaceCompare, "tbfeatOid2");
@@ -67,9 +70,9 @@ namespace OnCore_Replacement.Views
 				{
 					for (int i = 0; i < dgvDataReplacement.Rows.Count; i++) 
 					{
-						string sOID = "{" + dgvDataReplacement.Rows[i].Cells["tbfeatOid1"].Value.ToString() + "}";
-						GetObjByOID(sOID, out BusinessObject oBo);
-						GetObjByOID("{" + dgvDataReplacement.Rows[i].Cells["tbpartOid1"].Value.ToString() + "}", out BusinessObject oBoPart);
+						//string sOID = "{" + dgvDataReplacement.Rows[i].Cells["tbfeatOid1"].Value.ToString() + "}";
+						GetObjByOID(dgvDataReplacement.Rows[i].Cells["tbfeatOid1"].Value.ToString(), out BusinessObject oBo);
+						GetObjByOID(dgvDataReplacement.Rows[i].Cells["tbpartOid1"].Value.ToString(), out BusinessObject oBoPart);
 						if (oBo != null && oBo is RouteFeature) 
 						{
 							oBOPipeEndFeat.Add((RouteFeature)oBo);
@@ -105,6 +108,7 @@ namespace OnCore_Replacement.Views
 				{
 					for (int i = 0; i< oBOPipeEndFeat.Count; i++)
 					{
+						indexRow = i;
 						//if (checkboxHeader.Checked == false) 
 						//{
 
@@ -123,9 +127,12 @@ namespace OnCore_Replacement.Views
 							oBOPipeEndFeat[i].Delete();
 							oTransactionManager.Commit("");
 
-							oPipeRun.GetFeatureAtLocation(PathFeatureObjectTypes.PathFeatureType_STRAIGHT, PathFeatureFunctions.PathFeatureFunction_ROUTE, oPosition, out Position _, out RouteFeature oRouteFeat);
+							oPipeRun.GetFeatureAtLocation(Ingr.SP3D.Route.Middle.PathFeatureObjectTypes.PathFeatureType_STRAIGHT, Ingr.SP3D.Route.Middle.PathFeatureFunctions.PathFeatureFunction_ROUTE, oPosition, out Position _, out RouteFeature oRouteFeat);
 							oPipeRun.InsertFeatureByTagOnFeature(dgvDataReplacement.Rows[i].Cells["tbtagAvailable1"].Value.ToString(), "", oRouteFeat, oPosition, oPipeRun, out RouteFeature oInsertedFeature);
+							
 							OrientationAngleAlongLegFeature(oInsertedFeature, dOriginalAngle, out double _);
+							oTransactionManager.Commit("");
+							GetRoutePartFromOIDRoutFeatAndAddName(oInsertedFeature.ObjectID, dgvDataReplacement.Rows[i].Cells["tbtagAvailable1"].Value.ToString());
 							oTransactionManager.Commit("");
 
 							if (oBONote[i].Count > 0)
@@ -141,36 +148,95 @@ namespace OnCore_Replacement.Views
 						}
 					}
 				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message, "OnCore : Err replace obj");
-			}
-			finally
-			{
-				oTransactionManager.Commit("");
+
 				LoadDataReplace();
 				checkboxHeader.Checked = false;
-				
-				if (oListOBJCompare != null && oListOBJReplaced != null )
+
+				if (oListOBJCompare != null && oListOBJReplaced != null)
 				{
 					foreach (var item in oListOBJReplaced)
 					{
-						int indexInListCompare = oListOBJCompare.IndexOf(item.OldFeatOID.ToLower());
+						//int indexInListCompare = oListOBJCompare.IndexOf(item.OldFeatOID.ToLower());
+						//if (indexInListCompare != -1)
+						//{
+						//	dgvDataReplaceCompare.Rows[indexInListCompare].DefaultCellStyle.BackColor = Color.FromArgb(102, 204, 255);
+						//	dgvDataReplaceCompare.Rows[indexInListCompare].Cells[8].Value = item.NewFeatOID.ToString();
 
-						if (indexInListCompare != -1)
+						//	GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
+						//	HiliterObject(oBo);
+						//}	
+						foreach (DataGridViewRow row in dgvDataReplacement.Rows)
 						{
-							dgvDataReplaceCompare.Rows[indexInListCompare].DefaultCellStyle.BackColor = Color.FromArgb(102, 204, 255);
-							dgvDataReplaceCompare.Rows[indexInListCompare].Cells[8].Value = item.NewFeatOID.ToString();
-
-							GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
-							HiliterObject(oBo);
-						}	
-						
+							string _ = item.NewFeatOID.Replace("{", "");
+							string newFeatOid = _.Replace("}", "");
+							int index = row.Cells["tbfeatOid1"].Value.ToString().IndexOf(newFeatOid.ToLower());
+							if (index != -1)
+							{
+								row.Cells["tbStatus"].Value = "Success";
+								row.DefaultCellStyle.BackColor = default;
+								GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
+								HiliterObject(oBo);
+							}
+						}
 					}
+
 				}
+			}
+			catch (Exception ex)
+			{
+				if (indexRow != -1)
+				{
+					dgvDataReplacement.Rows[indexRow].DefaultCellStyle.BackColor = Color.Red;
+					dgvDataReplacement.Rows[indexRow].Cells["tbStatus"].Value = "Fail";
+				}
+				MessageBox.Show(ex.Message, "OnCore : Err replace obj");
+				//oTransactionManager.Undo();
+			}
+			finally
+			{
+				//oTransactionManager.Commit("");
+				//LoadDataReplace();
+				//checkboxHeader.Checked = false;
+				
+				//if (oListOBJCompare != null && oListOBJReplaced != null )
+				//{
+				//	foreach (var item in oListOBJReplaced)
+				//	{
+				//		//int indexInListCompare = oListOBJCompare.IndexOf(item.OldFeatOID.ToLower());
+				//		//if (indexInListCompare != -1)
+				//		//{
+				//		//	dgvDataReplaceCompare.Rows[indexInListCompare].DefaultCellStyle.BackColor = Color.FromArgb(102, 204, 255);
+				//		//	dgvDataReplaceCompare.Rows[indexInListCompare].Cells[8].Value = item.NewFeatOID.ToString();
+
+				//		//	GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
+				//		//	HiliterObject(oBo);
+				//		//}	
+				//		foreach(DataGridViewRow row in dgvDataReplacement.Rows)
+				//		{
+				//			string _ = item.NewFeatOID.Replace("{", "");
+				//			string newFeatOid = _.Replace("}", "");
+				//			int index = row.Cells["tbfeatOid1"].Value.ToString().IndexOf(newFeatOid.ToLower());
+				//			if (index != -1)
+				//			{
+				//				row.Cells["tbStatus"].Value = "Success";
+				//				row.DefaultCellStyle.BackColor = default;
+				//				GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
+				//				HiliterObject(oBo);
+				//			}
+				//		}
+				//	}
+					
+				//}
 				MessageBox.Show("Replace finish", "OnCore : Replacement");
 			}
+
+		}
+
+		//
+		// Summary:
+		//    Hilight object replace fall
+		private void HilightObjectReplaceFall()
+		{
 
 		}
 
@@ -214,11 +280,72 @@ namespace OnCore_Replacement.Views
 		{
 			try
 			{
-				ConnectSQL connectSQL = new ConnectSQL("Data Source=" + AllData.NameServer + ";Initial Catalog=" + AllData.DbName + ";Integrated Security=True");
-				if (connectSQL.IsConnection)
+				if(cbSelectOptionLoadData.SelectedItem.ToString() == "Data Base")
 				{
-					DataTable dt = DataProvider.Instance.LoadDataReplacement();
-					if (dt != null)
+					ConnectSQL connectSQL = new ConnectSQL("Data Source=" + AllData.NameServer + ";Initial Catalog=" + AllData.DbName + ";Integrated Security=True");
+					if (connectSQL.IsConnection)
+					{
+						DataTable dt = DataProvider.Instance.LoadDataReplacement();
+						if (dt != null)
+						{
+							if (dgvDataReplacement.Rows.Count > 0)
+							{
+								dgvDataReplacement.DataSource = null;
+								dgvDataReplacement.Rows.Clear();
+								dgvDataReplacement.Refresh();
+							}
+							for (int i = 0; i < dt.Rows.Count; i++)
+							{
+								dgvDataReplacement.Rows.Add(0, "---", dt.Rows[i][0], dt.Rows[i][1], dt.Rows[i][2], dt.Rows[i][3], dt.Rows[i][4], dt.Rows[i][5], dt.Rows[i][6], dt.Rows[i][7], dt.Rows[i][8], dt.Rows[i][9]);
+
+							}
+						}
+						CreateCheckBoxHeader();
+						checkboxHeader.Click += new System.EventHandler(this.checkboxSelectAll_Click);
+						DisableCellDataGridView();
+					}
+				}
+				else if (cbSelectOptionLoadData.SelectedItem.ToString() == "Section")
+				{
+					Filter oFilter = new Filter();
+					oFilter.Definition.AddObjectType("Piping\\PipingFeatures");
+					BOCollection oWorkingcoll = ClientServiceProvider.WorkingSet.GetObjectsByFilter(oFilter, ClientServiceProvider.WorkingSet.ActiveConnection);
+					
+					List<DataObjectByLoadSection> dataObjectByLoadSectionList = new List<DataObjectByLoadSection>();
+
+					foreach (BusinessObject businessObject in oWorkingcoll)
+					{
+						DataObjectByLoadSection dataObject = new DataObjectByLoadSection();
+						AlongLegFeature alongLegFeature = businessObject as AlongLegFeature;
+						if (alongLegFeature != null)
+						{
+							RouteFeature routeFeature = alongLegFeature as RouteFeature;
+							IJRtePipePathFeat pipePathFeat = (IJRtePipePathFeat)COMConverters.ConvertBOToCOMBO(alongLegFeature);
+							
+							foreach(RoutePart part in routeFeature.Parts)
+							{
+								Type type = part.GetType();
+								if (type.Name == "PipeInstrument" || type.Name == "PipeSpecialty")
+								{	
+									dataObject.PartOID = part.ObjectID; 
+									dataObject.PartName = part.Name;
+									dataObject.OBJType = type.Name;
+									dataObject.FeatOID = routeFeature.ObjectID;
+									dataObject.Tag = pipePathFeat.Tag;
+									dataObject.TagAvailable = DataProvider.Instance.CheckTagAvailable(dataObject.PartName);
+									dataObject.RunOID = routeFeature.Run.ObjectID;
+									dataObject.RunName = routeFeature.Run.Name;
+									BusinessObject pipeLine = (BusinessObject)routeFeature.Run.SystemParent;
+									dataObject.LineOID = pipeLine.ObjectID;
+									dataObject.LineName = routeFeature.Run.SystemParent.ToString();
+
+									dataObjectByLoadSectionList.Add(dataObject);
+								}
+							}
+						}
+					}
+
+					if (dataObjectByLoadSectionList != null)
 					{
 						if (dgvDataReplacement.Rows.Count > 0)
 						{
@@ -226,15 +353,21 @@ namespace OnCore_Replacement.Views
 							dgvDataReplacement.Rows.Clear();
 							dgvDataReplacement.Refresh();
 						}
-						for (int i = 0; i < dt.Rows.Count; i++)
+						for (int i = 0; i < dataObjectByLoadSectionList.Count; i++)
 						{
-							dgvDataReplacement.Rows.Add(0, dt.Rows[i][0], dt.Rows[i][1], dt.Rows[i][2], dt.Rows[i][3], dt.Rows[i][4], dt.Rows[i][5], dt.Rows[i][6], dt.Rows[i][7], dt.Rows[i][8], dt.Rows[i][9]);
+							dgvDataReplacement.Rows.Add(0, "---", dataObjectByLoadSectionList[i].PartOID, dataObjectByLoadSectionList[i].PartName, dataObjectByLoadSectionList[i].OBJType, dataObjectByLoadSectionList[i].FeatOID
+								,dataObjectByLoadSectionList[i].Tag, dataObjectByLoadSectionList[i].TagAvailable, dataObjectByLoadSectionList[i].RunOID, dataObjectByLoadSectionList[i].RunName, dataObjectByLoadSectionList[i].LineOID, dataObjectByLoadSectionList[i].LineName);
 
 						}
 					}
 					CreateCheckBoxHeader();
 					checkboxHeader.Click += new System.EventHandler(this.checkboxSelectAll_Click);
 					DisableCellDataGridView();
+
+				}
+				else 
+				{
+					MessageBox.Show("Please select type load data", "OnCore : Err load data replace");
 				}
 			}
 			catch (Exception ex)
@@ -263,7 +396,7 @@ namespace OnCore_Replacement.Views
 			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
 			{
 				DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)row.Cells[0];
-				if (row.Cells["tbtagAvailable1"].Value.ToString() != "No" && checkboxHeader.Checked == true)
+				if (row.Cells["tbtagAvailable1"].Value.ToString() != "No" && checkboxHeader.Checked == true && row.Cells["tbTag1"].Value.ToString() != row.Cells["tbtagAvailable1"].Value.ToString())
 				{
 					checkBoxCell.Value = checkboxHeader.Checked;
 				}
@@ -327,7 +460,60 @@ namespace OnCore_Replacement.Views
 
 		//
 		// Summary:
-		//    Get route part from OID route feat and add notes for route part
+		//    Get route part from OID route feat and add notes, name for route part
+		private void GetRoutePartFromOIDRoutFeatAndAddName(string sOIDRouteFeat, string sName)
+		{
+			BusinessObject oBo = null;
+			if (sOIDRouteFeat.Contains("}"))
+			{
+				GetObjByOID(sOIDRouteFeat, out oBo);
+			}
+			else
+			{
+				GetObjByOID("{" + sOIDRouteFeat + "}", out oBo);
+			}
+			if (oBo is RouteFeature)
+			{
+				try
+				{
+					DataTable dt = DataProvider.Instance.LoadDataOIDObject();
+					if (dt != null)
+					{
+						string targetValueOID = Regex.Replace(oBo.ObjectID.ToLower(), "[{}]", "");
+
+						var query = from row in dt.AsEnumerable()
+									let columnIndex = dt.Columns["tbfeatOid"].Ordinal
+									let columnValue = row[columnIndex]?.ToString()
+									where columnValue == targetValueOID
+									select new { RowIndex = dt.Rows.IndexOf(row), Value = targetValueOID };
+
+						var result = query.FirstOrDefault();
+
+						if (result != null)
+						{
+							string sOIDRoutePart = dt.Rows[result.RowIndex][0].ToString();
+							GetObjByOID("{" + sOIDRoutePart + "}", out oBo);
+							if (oBo is RoutePart)
+							{
+								RoutePart oRoutePart = (RoutePart)oBo;
+								if (oRoutePart != null)
+								{
+									oRoutePart.SetUserDefinedName(sName);
+								}
+
+							}
+						}
+					}
+
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message, "OnCore : Err find and add Note into Tag");
+				}
+
+			}
+
+		}
 		private void GetRoutePartFromOIDRoutFeatAndAddNote(string  sOIDRouteFeat, List<DataNote> oBONote)
 		{
 			BusinessObject oBo = null;
@@ -482,8 +668,13 @@ namespace OnCore_Replacement.Views
 		//
 		// Summary:
 		//    Get object from the OID
-		private void GetObjByOID(string sOid, out BusinessObject oBo)
+		private void GetObjByOID(string sOidOld, out BusinessObject oBo)
 		{
+			string sOid = sOidOld;
+			if (!sOid.Contains("}"))
+			{
+				sOid = "{" + sOidOld + "}";
+			}
 			SP3DConnection oSP3DConnection = ClientServiceProvider.WorkingSet.ActiveConnection;
 			oBo = null;
 			try
@@ -514,12 +705,24 @@ namespace OnCore_Replacement.Views
 		{
 			try
 			{
-				if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 2 && e.ColumnIndex != 3 && e.ColumnIndex != 6
-					&& e.ColumnIndex != 10 && e.ColumnIndex != 8 && e.ColumnIndex != 5)
+				if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 1 && e.ColumnIndex != 3 && e.ColumnIndex != 4
+					&& e.ColumnIndex != 6 && e.ColumnIndex != 7 && e.ColumnIndex != 9 && e.ColumnIndex != 11)
 				{
-					ClearHighlightElements();
-					string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-					HilightObjectWhenDoubleClickinDGV(sOID);
+					if (dgvDataReplacement.Rows[e.RowIndex].DefaultCellStyle.BackColor != Color.Red)
+					{
+						ClearHighlightElements();
+						string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+						SelectObjectWhenDoubleClickDGV(sOID);
+					}	
+					else
+					{
+						if (e.ColumnIndex != 5 && e.ColumnIndex != 2)
+						{
+							ClearHighlightElements();
+							string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+							SelectObjectWhenDoubleClickDGV(sOID);
+						}	
+					}	
 				}
 			}
 			catch (Exception ex)
@@ -535,7 +738,7 @@ namespace OnCore_Replacement.Views
 		{
 			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
 			{
-				if (row.Cells["tbtagAvailable1"].Value.ToString() == "No")
+				if (row.Cells["tbtagAvailable1"].Value.ToString() == "No" || row.Cells["tbTag1"].Value.ToString() == row.Cells["tbtagAvailable1"].Value.ToString())
 				{
 					DataGridViewCell cell = row.Cells[0];
 					DataGridViewCheckBoxCell chkCell = cell as DataGridViewCheckBoxCell;
@@ -543,6 +746,7 @@ namespace OnCore_Replacement.Views
 					chkCell.FlatStyle = FlatStyle.Flat;
 					chkCell.Style.ForeColor = Color.DarkGray;
 					cell.ReadOnly = true;
+					row.DefaultCellStyle.BackColor = Color.FromArgb(185, 186, 189);
 				}
 			}	
 		}
@@ -591,6 +795,24 @@ namespace OnCore_Replacement.Views
 			{
 				GetObjByOID("{" + sOID + "}", out BusinessObject oBo);
 				HiliterObject(oBo);
+			}
+		}
+
+		private void SelectObjectWhenDoubleClickDGV( string sOID)
+		{
+			if (ClientServiceProvider.SelectSet.SelectedObjects.Count > 0) 
+			{
+				ClientServiceProvider.SelectSet.SelectedObjects.Clear();
+			}
+			if (sOID.Contains("}"))
+			{
+				GetObjByOID(sOID, out BusinessObject oBo);
+				ClientServiceProvider.SelectSet.SelectedObjects.Add(oBo);
+			}
+			else
+			{
+				GetObjByOID("{" + sOID + "}", out BusinessObject oBo);
+				ClientServiceProvider.SelectSet.SelectedObjects.Add(oBo);
 			}
 		}
 
