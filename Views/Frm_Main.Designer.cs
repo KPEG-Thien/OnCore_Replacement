@@ -33,7 +33,6 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Frm_Main));
 			this.kryptonPalette1 = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
 			this.kryptonPanel1 = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.kryptonGroupBox1 = new ComponentFactory.Krypton.Toolkit.KryptonGroupBox();
 			this.cbSelectOptionLoadData = new ComponentFactory.Krypton.Toolkit.KryptonComboBox();
 			this.btnReplaceObj = new ComponentFactory.Krypton.Toolkit.KryptonButton();
@@ -45,18 +44,6 @@
 			this.kryptonDockableNavigator1 = new ComponentFactory.Krypton.Docking.KryptonDockableNavigator();
 			this.kryptonPage2 = new ComponentFactory.Krypton.Navigator.KryptonPage();
 			this.dgvDataReplacement = new ComponentFactory.Krypton.Toolkit.KryptonDataGridView();
-			this.tbselectObj1 = new ComponentFactory.Krypton.Toolkit.KryptonDataGridViewCheckBoxColumn();
-			this.tbStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbpartOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbpartName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbobjType1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbfeatOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbTag1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbTagAvailable1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbrunOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tbrunName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tblineOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.tblineName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.kryptonPage3 = new ComponentFactory.Krypton.Navigator.KryptonPage();
 			this.dgvDataReplaceCompare = new ComponentFactory.Krypton.Toolkit.KryptonDataGridView();
 			this.tbpartOid2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -72,9 +59,29 @@
 			this.tbrunName2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tblineOid2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tblineName2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbselectObj1 = new ComponentFactory.Krypton.Toolkit.KryptonDataGridViewCheckBoxColumn();
+			this.tbStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbpartOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbpartName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbobjType1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbfeatOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbTag1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbTagAvailable1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbrunOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tbrunName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tblineOid1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.tblineName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.filterContextMenu = new ComponentFactory.Krypton.Toolkit.KryptonContextMenu();
+			this.kryptonContextMenuCheckBox1 = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox();
+			this.kryptonContextMenuCheckBox2 = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox();
+			this.kryptonContextMenuCheckBox3 = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox();
+			this.btnFilterDgv = new ComponentFactory.Krypton.Toolkit.KryptonButton();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.btnFilterAll = new ComponentFactory.Krypton.Toolkit.KryptonCommand();
+			this.btnFilterSuccess = new ComponentFactory.Krypton.Toolkit.KryptonCommand();
+			this.btnFilterFail = new ComponentFactory.Krypton.Toolkit.KryptonCommand();
 			((System.ComponentModel.ISupportInitialize)(this.kryptonPanel1)).BeginInit();
 			this.kryptonPanel1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1.Panel)).BeginInit();
 			this.kryptonGroupBox1.Panel.SuspendLayout();
@@ -92,6 +99,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.kryptonPage3)).BeginInit();
 			this.kryptonPage3.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvDataReplaceCompare)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// kryptonPalette1
@@ -119,16 +127,6 @@
 			this.kryptonPanel1.StateCommon.Color1 = System.Drawing.Color.White;
 			this.kryptonPanel1.StateCommon.Color2 = System.Drawing.Color.White;
 			this.kryptonPanel1.TabIndex = 0;
-			// 
-			// pictureBox1
-			// 
-			this.pictureBox1.Image = global::OnCore_Replacement.Properties.Resources.OnCore_Logo;
-			this.pictureBox1.Location = new System.Drawing.Point(597, 16);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(210, 46);
-			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-			this.pictureBox1.TabIndex = 1;
-			this.pictureBox1.TabStop = false;
 			// 
 			// kryptonGroupBox1
 			// 
@@ -306,6 +304,7 @@
 			// kryptonPage2
 			// 
 			this.kryptonPage2.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
+			this.kryptonPage2.Controls.Add(this.btnFilterDgv);
 			this.kryptonPage2.Controls.Add(this.dgvDataReplacement);
 			this.kryptonPage2.Flags = 65534;
 			this.kryptonPage2.LastVisibleSet = true;
@@ -338,6 +337,7 @@
 			this.dgvDataReplacement.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dgvDataReplacement.Location = new System.Drawing.Point(0, 0);
 			this.dgvDataReplacement.Name = "dgvDataReplacement";
+			this.dgvDataReplacement.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.dgvDataReplacement.RowHeadersVisible = false;
 			this.dgvDataReplacement.Size = new System.Drawing.Size(926, 325);
 			this.dgvDataReplacement.StateCommon.Background.Color1 = System.Drawing.Color.White;
@@ -345,99 +345,6 @@
 			this.dgvDataReplacement.StateCommon.BackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.GridBackgroundList;
 			this.dgvDataReplacement.TabIndex = 0;
 			this.dgvDataReplacement.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDataReplacement_CellDoubleClick);
-			// 
-			// tbselectObj1
-			// 
-			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-			dataGridViewCellStyle1.NullValue = false;
-			this.tbselectObj1.DefaultCellStyle = dataGridViewCellStyle1;
-			this.tbselectObj1.FalseValue = null;
-			this.tbselectObj1.FillWeight = 3.512411F;
-			this.tbselectObj1.HeaderText = "";
-			this.tbselectObj1.IndeterminateValue = null;
-			this.tbselectObj1.Name = "tbselectObj1";
-			this.tbselectObj1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-			this.tbselectObj1.TrueValue = null;
-			this.tbselectObj1.Width = 50;
-			// 
-			// tbStatus
-			// 
-			this.tbStatus.HeaderText = "Status";
-			this.tbStatus.Name = "tbStatus";
-			this.tbStatus.ReadOnly = true;
-			this.tbStatus.Width = 80;
-			// 
-			// tbpartOid1
-			// 
-			this.tbpartOid1.FillWeight = 532.9949F;
-			this.tbpartOid1.HeaderText = "Part OID";
-			this.tbpartOid1.Name = "tbpartOid1";
-			this.tbpartOid1.ReadOnly = true;
-			this.tbpartOid1.Width = 200;
-			// 
-			// tbpartName1
-			// 
-			this.tbpartName1.FillWeight = 1.721081F;
-			this.tbpartName1.HeaderText = "Part Name";
-			this.tbpartName1.Name = "tbpartName1";
-			this.tbpartName1.ReadOnly = true;
-			this.tbpartName1.Width = 130;
-			// 
-			// tbobjType1
-			// 
-			this.tbobjType1.FillWeight = 1.721081F;
-			this.tbobjType1.HeaderText = "OBJ Type";
-			this.tbobjType1.Name = "tbobjType1";
-			this.tbobjType1.ReadOnly = true;
-			this.tbobjType1.Width = 120;
-			// 
-			// tbfeatOid1
-			// 
-			this.tbfeatOid1.FillWeight = 156.6083F;
-			this.tbfeatOid1.HeaderText = "Feat OID";
-			this.tbfeatOid1.Name = "tbfeatOid1";
-			this.tbfeatOid1.ReadOnly = true;
-			this.tbfeatOid1.Width = 200;
-			// 
-			// tbTag1
-			// 
-			this.tbTag1.FillWeight = 1.721081F;
-			this.tbTag1.HeaderText = "Tag";
-			this.tbTag1.Name = "tbTag1";
-			this.tbTag1.ReadOnly = true;
-			this.tbTag1.Width = 120;
-			// 
-			// tbTagAvailable1
-			// 
-			this.tbTagAvailable1.FillWeight = 1.721081F;
-			this.tbTagAvailable1.HeaderText = "Tag Available";
-			this.tbTagAvailable1.Name = "tbTagAvailable1";
-			this.tbTagAvailable1.ReadOnly = true;
-			this.tbTagAvailable1.Width = 105;
-			// 
-			// tbrunOid1
-			// 
-			this.tbrunOid1.HeaderText = "Run OID";
-			this.tbrunOid1.Name = "tbrunOid1";
-			this.tbrunOid1.ReadOnly = true;
-			// 
-			// tbrunName1
-			// 
-			this.tbrunName1.HeaderText = "Run Name";
-			this.tbrunName1.Name = "tbrunName1";
-			this.tbrunName1.ReadOnly = true;
-			// 
-			// tblineOid1
-			// 
-			this.tblineOid1.HeaderText = "Line OID";
-			this.tblineOid1.Name = "tblineOid1";
-			this.tblineOid1.ReadOnly = true;
-			// 
-			// tblineName1
-			// 
-			this.tblineName1.HeaderText = "Line Name";
-			this.tblineName1.Name = "tblineName1";
-			this.tblineName1.ReadOnly = true;
 			// 
 			// kryptonPage3
 			// 
@@ -481,7 +388,7 @@
 			this.dgvDataReplaceCompare.StateCommon.Background.Color1 = System.Drawing.Color.White;
 			this.dgvDataReplaceCompare.StateCommon.Background.Color2 = System.Drawing.Color.White;
 			this.dgvDataReplaceCompare.StateCommon.BackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.GridBackgroundList;
-			this.dgvDataReplaceCompare.TabIndex = 1;
+			this.dgvDataReplaceCompare.TabIndex = 0;
 			this.dgvDataReplaceCompare.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDataReplaceCompare_CellDoubleClick);
 			// 
 			// tbpartOid2
@@ -562,6 +469,201 @@
 			this.tblineName2.Name = "tblineName2";
 			this.tblineName2.ReadOnly = true;
 			// 
+			// tbselectObj1
+			// 
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+			dataGridViewCellStyle1.NullValue = false;
+			this.tbselectObj1.DefaultCellStyle = dataGridViewCellStyle1;
+			this.tbselectObj1.FalseValue = null;
+			this.tbselectObj1.FillWeight = 3.512411F;
+			this.tbselectObj1.HeaderText = "";
+			this.tbselectObj1.IndeterminateValue = null;
+			this.tbselectObj1.MinimumWidth = 22;
+			this.tbselectObj1.Name = "tbselectObj1";
+			this.tbselectObj1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+			this.tbselectObj1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbselectObj1.TrueValue = null;
+			this.tbselectObj1.Width = 50;
+			// 
+			// tbStatus
+			// 
+			this.tbStatus.HeaderText = "Status";
+			this.tbStatus.MinimumWidth = 22;
+			this.tbStatus.Name = "tbStatus";
+			this.tbStatus.ReadOnly = true;
+			this.tbStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbStatus.Width = 80;
+			// 
+			// tbpartOid1
+			// 
+			this.tbpartOid1.FillWeight = 532.9949F;
+			this.tbpartOid1.HeaderText = "Part OID";
+			this.tbpartOid1.MinimumWidth = 22;
+			this.tbpartOid1.Name = "tbpartOid1";
+			this.tbpartOid1.ReadOnly = true;
+			this.tbpartOid1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbpartOid1.Width = 200;
+			// 
+			// tbpartName1
+			// 
+			this.tbpartName1.FillWeight = 1.721081F;
+			this.tbpartName1.HeaderText = "Part Name";
+			this.tbpartName1.MinimumWidth = 22;
+			this.tbpartName1.Name = "tbpartName1";
+			this.tbpartName1.ReadOnly = true;
+			this.tbpartName1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbpartName1.Width = 130;
+			// 
+			// tbobjType1
+			// 
+			this.tbobjType1.FillWeight = 1.721081F;
+			this.tbobjType1.HeaderText = "OBJ Type";
+			this.tbobjType1.MinimumWidth = 22;
+			this.tbobjType1.Name = "tbobjType1";
+			this.tbobjType1.ReadOnly = true;
+			this.tbobjType1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbobjType1.Width = 120;
+			// 
+			// tbfeatOid1
+			// 
+			this.tbfeatOid1.FillWeight = 156.6083F;
+			this.tbfeatOid1.HeaderText = "Feat OID";
+			this.tbfeatOid1.MinimumWidth = 22;
+			this.tbfeatOid1.Name = "tbfeatOid1";
+			this.tbfeatOid1.ReadOnly = true;
+			this.tbfeatOid1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbfeatOid1.Width = 200;
+			// 
+			// tbTag1
+			// 
+			this.tbTag1.FillWeight = 1.721081F;
+			this.tbTag1.HeaderText = "Tag";
+			this.tbTag1.MinimumWidth = 22;
+			this.tbTag1.Name = "tbTag1";
+			this.tbTag1.ReadOnly = true;
+			this.tbTag1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbTag1.Width = 120;
+			// 
+			// tbTagAvailable1
+			// 
+			this.tbTagAvailable1.FillWeight = 1.721081F;
+			this.tbTagAvailable1.HeaderText = "Tag Available";
+			this.tbTagAvailable1.MinimumWidth = 22;
+			this.tbTagAvailable1.Name = "tbTagAvailable1";
+			this.tbTagAvailable1.ReadOnly = true;
+			this.tbTagAvailable1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			this.tbTagAvailable1.Width = 105;
+			// 
+			// tbrunOid1
+			// 
+			this.tbrunOid1.HeaderText = "Run OID";
+			this.tbrunOid1.MinimumWidth = 22;
+			this.tbrunOid1.Name = "tbrunOid1";
+			this.tbrunOid1.ReadOnly = true;
+			this.tbrunOid1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			// 
+			// tbrunName1
+			// 
+			this.tbrunName1.HeaderText = "Run Name";
+			this.tbrunName1.MinimumWidth = 22;
+			this.tbrunName1.Name = "tbrunName1";
+			this.tbrunName1.ReadOnly = true;
+			this.tbrunName1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			// 
+			// tblineOid1
+			// 
+			this.tblineOid1.HeaderText = "Line OID";
+			this.tblineOid1.MinimumWidth = 22;
+			this.tblineOid1.Name = "tblineOid1";
+			this.tblineOid1.ReadOnly = true;
+			this.tblineOid1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			// 
+			// tblineName1
+			// 
+			this.tblineName1.HeaderText = "Line Name";
+			this.tblineName1.MinimumWidth = 22;
+			this.tblineName1.Name = "tblineName1";
+			this.tblineName1.ReadOnly = true;
+			this.tblineName1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+			// 
+			// filterContextMenu
+			// 
+			this.filterContextMenu.Items.AddRange(new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItemBase[] {
+            this.kryptonContextMenuCheckBox1,
+            this.kryptonContextMenuCheckBox2,
+            this.kryptonContextMenuCheckBox3});
+			this.filterContextMenu.Closing += new System.ComponentModel.CancelEventHandler(this.filterContextMenu_Closing);
+			// 
+			// kryptonContextMenuCheckBox1
+			// 
+			this.kryptonContextMenuCheckBox1.AutoClose = true;
+			this.kryptonContextMenuCheckBox1.Checked = true;
+			this.kryptonContextMenuCheckBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.kryptonContextMenuCheckBox1.ExtraText = "";
+			this.kryptonContextMenuCheckBox1.KryptonCommand = this.btnFilterAll;
+			this.kryptonContextMenuCheckBox1.Text = "All";
+			// 
+			// kryptonContextMenuCheckBox2
+			// 
+			this.kryptonContextMenuCheckBox2.AutoClose = true;
+			this.kryptonContextMenuCheckBox2.ExtraText = "";
+			this.kryptonContextMenuCheckBox2.KryptonCommand = this.btnFilterSuccess;
+			this.kryptonContextMenuCheckBox2.Text = "Success";
+			// 
+			// kryptonContextMenuCheckBox3
+			// 
+			this.kryptonContextMenuCheckBox3.AutoClose = true;
+			this.kryptonContextMenuCheckBox3.ExtraText = "";
+			this.kryptonContextMenuCheckBox3.KryptonCommand = this.btnFilterFail;
+			this.kryptonContextMenuCheckBox3.Text = "Fail";
+			// 
+			// btnFilterDgv
+			// 
+			this.btnFilterDgv.KryptonContextMenu = this.filterContextMenu;
+			this.btnFilterDgv.Location = new System.Drawing.Point(98, 2);
+			this.btnFilterDgv.Name = "btnFilterDgv";
+			this.btnFilterDgv.Size = new System.Drawing.Size(31, 22);
+			this.btnFilterDgv.StateCommon.Back.Image = global::OnCore_Replacement.Properties.Resources.icons_drop_down_20;
+			this.btnFilterDgv.StateCommon.Back.ImageStyle = ComponentFactory.Krypton.Toolkit.PaletteImageStyle.CenterMiddle;
+			this.btnFilterDgv.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+			this.btnFilterDgv.StateCommon.Border.Width = 0;
+			this.btnFilterDgv.StatePressed.Back.Image = global::OnCore_Replacement.Properties.Resources.icons_drop_down_20;
+			this.btnFilterDgv.StatePressed.Back.ImageStyle = ComponentFactory.Krypton.Toolkit.PaletteImageStyle.CenterMiddle;
+			this.btnFilterDgv.StatePressed.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+			this.btnFilterDgv.StatePressed.Border.Width = 0;
+			this.btnFilterDgv.TabIndex = 1;
+			this.btnFilterDgv.Values.Text = "";
+			this.btnFilterDgv.Click += new System.EventHandler(this.btnFilterDgv_Click);
+			// 
+			// pictureBox1
+			// 
+			this.pictureBox1.Image = global::OnCore_Replacement.Properties.Resources.OnCore_Logo;
+			this.pictureBox1.Location = new System.Drawing.Point(597, 16);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(210, 46);
+			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pictureBox1.TabIndex = 1;
+			this.pictureBox1.TabStop = false;
+			// 
+			// btnFilterAll
+			// 
+			this.btnFilterAll.Text = "All";
+			this.btnFilterAll.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(this.btnFilterAll_PropertyChanged);
+			// 
+			// btnFilterSuccess
+			// 
+			this.btnFilterSuccess.Text = "Success";
+			this.btnFilterSuccess.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(this.btnFilterSuccess_PropertyChanged);
+			// 
+			// btnFilterFail
+			// 
+			this.btnFilterFail.Text = "Fail";
+			this.btnFilterFail.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(this.btnFilterFail_PropertyChanged);
+			// 
 			// Frm_Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -583,7 +685,6 @@
 			this.Load += new System.EventHandler(this.Frm_Main_Load);
 			((System.ComponentModel.ISupportInitialize)(this.kryptonPanel1)).EndInit();
 			this.kryptonPanel1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1.Panel)).EndInit();
 			this.kryptonGroupBox1.Panel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1)).EndInit();
@@ -602,6 +703,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.kryptonPage3)).EndInit();
 			this.kryptonPage3.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dgvDataReplaceCompare)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -636,6 +738,7 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn tbrunName2;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tblineOid2;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tblineName2;
+		private ComponentFactory.Krypton.Toolkit.KryptonComboBox cbSelectOptionLoadData;
 		private ComponentFactory.Krypton.Toolkit.KryptonDataGridViewCheckBoxColumn tbselectObj1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tbStatus;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tbpartOid1;
@@ -648,6 +751,13 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn tbrunName1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tblineOid1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn tblineName1;
-		private ComponentFactory.Krypton.Toolkit.KryptonComboBox cbSelectOptionLoadData;
+		private ComponentFactory.Krypton.Toolkit.KryptonContextMenu filterContextMenu;
+		private ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox kryptonContextMenuCheckBox1;
+		private ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox kryptonContextMenuCheckBox2;
+		private ComponentFactory.Krypton.Toolkit.KryptonContextMenuCheckBox kryptonContextMenuCheckBox3;
+		private ComponentFactory.Krypton.Toolkit.KryptonButton btnFilterDgv;
+		private ComponentFactory.Krypton.Toolkit.KryptonCommand btnFilterAll;
+		private ComponentFactory.Krypton.Toolkit.KryptonCommand btnFilterSuccess;
+		private ComponentFactory.Krypton.Toolkit.KryptonCommand btnFilterFail;
 	}
 }

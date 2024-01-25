@@ -11,5 +11,7 @@ namespace OnCore_Replacement
 		public string OldFeatOID {  get; set; }
 		public string NewFeatOID { get; set;}
 		public string ObjTagReplace {  get; set; }
+		public string Status {  get; set; }
+		public int ID { get; set; }
 	}
 }

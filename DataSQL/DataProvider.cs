@@ -126,8 +126,8 @@ namespace OnCore_Replacement.DataSQL
 
 		public DataTable LoadDataReplacement()
 		{
-			string query = "select po.Oid as tbpartOid\r\n,j1.ItemName as tbpartName\r\n,po.tbobjType \r\n,ppf.Oid as tbfeatOid\r\n,ppf.Tag as tbTag\r\n,ISNULL(cTag.TagNumber,'No') as tbIsTagAvailableInCatalog ,xop.OidOrigin as tbrunOid\r\n,j2.ItemName as tbrunName\r\n,xsh.OidOrigin as tblineOid\r\n,j3.ItemName as tblineName" + "\n" +
-				"from \r\n(\r\nselect ri.Oid\r\n,'Instrument' as tbobjType \r\nfrom JRteInstrument ri\r\nunion\r\nselect rs.Oid \r\n,'Specialty' as tbobjType\r\nfrom JRteSpecialtyOccur rs\r\n)po " + "\n" +
+			string query = "select po.Oid as tbpartOid\r\n,j1.ItemName as tbpartName\r\n,po.objType as tbobjtype \r\n,ppf.Oid as tbfeatOid\r\n,ppf.Tag as tbtag\r\n,ISNULL(cTag.TagNumber,'No') as tbIsTagAvailableInCatalog\r\n,xop.OidOrigin as tbrunOid\r\n,j2.ItemName as tbrunName\r\n,xsh.OidOrigin as tblineOid\r\n,j3.ItemName as tblineName" + "\n" +
+				"from \r\n(\r\nselect ri.Oid\r\n,'Instrument' as objType \r\nfrom JRteInstrument ri\r\nunion\r\nselect rs.Oid \r\n,'Specialty' as objType\r\nfrom JRteSpecialtyOccur rs\r\n)po \r\n" + "\n" +
 				"join JNamedItem j1 on j1.Oid  = po.Oid" + "\n" +
 				"join XPathGeneratedParts pgp on pgp.OidDestination = po.Oid" + "\n" +
 				"join JRtePipePathFeat ppf on ppf.Oid = pgp.OidOrigin" + "\n" +
@@ -135,7 +135,8 @@ namespace OnCore_Replacement.DataSQL
 				"join JNamedItem j2 on j2.Oid = xop.OidOrigin" + "\n" +
 				"join XSystemHierarchy xsh on xsh.OidDestination = xop.OidOrigin" + "\n" +
 				"join JNamedItem j3 on j3.Oid  = xsh.OidOrigin" + "\n" +
-				"left join\r\n(\r\n\tselect ic.Oid \r\n\t, case \r\n\t\twhen ic.TagNumber ='' then ic.GenericTagNumber\r\n\t\telse ic.TagNumber\r\n\tend as TagNumber\r\n\t,'instrument' as itemType\r\n\t from JInstrumentClass ic\r\n\twhere ic.TagNumber <> '' or ic.GenericTagNumber <> ''\r\n\tunion\r\n\tselect pc.Oid \r\n\t, case \r\n\t\twhen pc.TagNumber ='' then pc.GenericTagNumber\r\n\t\telse pc.TagNumber\r\n\tend as TagNumber\r\n\t,'Specialty' as itemType\r\n\t from JPipingSpecialtyClass pc\r\n\twhere pc.TagNumber <> '' or pc.GenericTagNumber <> ''\r\n) cTag on j1.ItemName = cTag.TagNumber ";
+				"left join\r\n(\r\n\tselect\r\n\tj1.Oid as partOid,\r\n\tcount(j1.Oid) as PortQty\r\n\tfrom JRtePathGenPart j1\t\r\n\tjoin JDistribPort j2 on j2.oidOwner = j1.Oid\t\r\n\tgroup by j1.Oid \r\n)pp on pp.partOid =po.Oid " + "\n" +
+				"left join\r\n(\r\n\tselect ic.Oid \r\n\t, case \r\n\t\twhen ic.TagNumber ='' then ic.GenericTagNumber\r\n\t\telse ic.TagNumber\r\n\tend as TagNumber\r\n\t,'instrument' as itemType\r\n\t from JInstrumentClass ic\r\n\twhere ic.TagNumber <> '' or ic.GenericTagNumber <> ''\r\n\tunion\r\n\tselect pc.Oid \r\n\t, case \r\n\t\twhen pc.TagNumber ='' then pc.GenericTagNumber\r\n\t\telse pc.TagNumber\r\n\tend as TagNumber\r\n\t,'Specialty' as itemType\r\n\t from JPipingSpecialtyClass pc\r\n\twhere pc.TagNumber <> '' or pc.GenericTagNumber <> ''\r\n) cTag on j1.ItemName = cTag.TagNumber \r\n where pp.PortQty > 1";
 			DataTable tb = ExecuteQuery(AllData.DbName, query, new object[] { });
 			return tb;
 		}

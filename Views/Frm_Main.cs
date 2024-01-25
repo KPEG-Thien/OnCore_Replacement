@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
@@ -109,10 +110,6 @@ namespace OnCore_Replacement.Views
 					for (int i = 0; i< oBOPipeEndFeat.Count; i++)
 					{
 						indexRow = i;
-						//if (checkboxHeader.Checked == false) 
-						//{
-
-						//}
 						bool isChecked = Convert.ToBoolean(dgvDataReplacement.Rows[i].Cells["tbselectObj1"].Value);
 
 						if (dgvDataReplacement.Rows[i].Cells["tbtagAvailable1"].Value.ToString() != "No" && isChecked)
@@ -140,46 +137,45 @@ namespace OnCore_Replacement.Views
 								GetRoutePartFromOIDRoutFeatAndAddNote(oInsertedFeature.ObjectID, oBONote[i]);
 								oTransactionManager.Commit("");
 							}
-
 							dataStorageReplace.NewFeatOID = oInsertedFeature.ObjectID;
+							dgvDataReplacement.Rows[i].Cells["tbfeatOid1"].Value = oInsertedFeature.ObjectID;
 							dataStorageReplace.ObjTagReplace = dgvDataReplacement.Rows[i].Cells["tbtagAvailable1"].Value.ToString();
+							dataStorageReplace.ID = i;
+							
+							if (oInsertedFeature.Parts != null) 
+							{
+								dgvDataReplacement.Rows[i].Cells["tbpartOid1"].Value = GetRoutePartFromOIDRoutFeat(oInsertedFeature.ObjectID);
+								dataStorageReplace.Status = "Success";
+							}
+							else
+							{
+								dataStorageReplace.Status = "Fail";
+							}
 							oListOBJReplaced.Add(dataStorageReplace);
 
 						}
 					}
 				}
 
-				LoadDataReplace();
+				//LoadDataReplace();
 				checkboxHeader.Checked = false;
-
-				if (oListOBJCompare != null && oListOBJReplaced != null)
+				if (oListOBJReplaced.Count > 0) 
 				{
-					foreach (var item in oListOBJReplaced)
+					foreach(var item in  oListOBJReplaced)
 					{
-						//int indexInListCompare = oListOBJCompare.IndexOf(item.OldFeatOID.ToLower());
-						//if (indexInListCompare != -1)
-						//{
-						//	dgvDataReplaceCompare.Rows[indexInListCompare].DefaultCellStyle.BackColor = Color.FromArgb(102, 204, 255);
-						//	dgvDataReplaceCompare.Rows[indexInListCompare].Cells[8].Value = item.NewFeatOID.ToString();
-
-						//	GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
-						//	HiliterObject(oBo);
-						//}	
-						foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+						if (item.Status == "Success")
 						{
-							string _ = item.NewFeatOID.Replace("{", "");
-							string newFeatOid = _.Replace("}", "");
-							int index = row.Cells["tbfeatOid1"].Value.ToString().IndexOf(newFeatOid.ToLower());
-							if (index != -1)
-							{
-								row.Cells["tbStatus"].Value = "Success";
-								row.DefaultCellStyle.BackColor = default;
-								GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
-								HiliterObject(oBo);
-							}
+							dgvDataReplacement.Rows[item.ID].Cells["tbStatus"].Value = "Success";
+							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = Color.FromArgb(102, 255, 102);
+							GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
+							HiliterObject(oBo);
+						}
+						else
+						{
+							dgvDataReplacement.Rows[item.ID].Cells["tbStatus"].Value = "Fail";
+							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = Color.FromArgb(255, 102, 102);
 						}
 					}
-
 				}
 			}
 			catch (Exception ex)
@@ -194,42 +190,14 @@ namespace OnCore_Replacement.Views
 			}
 			finally
 			{
-				//oTransactionManager.Commit("");
-				//LoadDataReplace();
-				//checkboxHeader.Checked = false;
-				
-				//if (oListOBJCompare != null && oListOBJReplaced != null )
-				//{
-				//	foreach (var item in oListOBJReplaced)
-				//	{
-				//		//int indexInListCompare = oListOBJCompare.IndexOf(item.OldFeatOID.ToLower());
-				//		//if (indexInListCompare != -1)
-				//		//{
-				//		//	dgvDataReplaceCompare.Rows[indexInListCompare].DefaultCellStyle.BackColor = Color.FromArgb(102, 204, 255);
-				//		//	dgvDataReplaceCompare.Rows[indexInListCompare].Cells[8].Value = item.NewFeatOID.ToString();
-
-				//		//	GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
-				//		//	HiliterObject(oBo);
-				//		//}	
-				//		foreach(DataGridViewRow row in dgvDataReplacement.Rows)
-				//		{
-				//			string _ = item.NewFeatOID.Replace("{", "");
-				//			string newFeatOid = _.Replace("}", "");
-				//			int index = row.Cells["tbfeatOid1"].Value.ToString().IndexOf(newFeatOid.ToLower());
-				//			if (index != -1)
-				//			{
-				//				row.Cells["tbStatus"].Value = "Success";
-				//				row.DefaultCellStyle.BackColor = default;
-				//				GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
-				//				HiliterObject(oBo);
-				//			}
-				//		}
-				//	}
-					
-				//}
 				MessageBox.Show("Replace finish", "OnCore : Replacement");
 			}
 
+		}
+
+		public void CheckStatus()
+		{
+			
 		}
 
 		//
@@ -316,30 +284,34 @@ namespace OnCore_Replacement.Views
 					foreach (BusinessObject businessObject in oWorkingcoll)
 					{
 						DataObjectByLoadWorkspace dataObject = new DataObjectByLoadWorkspace();
-						AlongLegFeature alongLegFeature = businessObject as AlongLegFeature;
-						if (alongLegFeature != null)
+						RouteFeature routeFeature = businessObject as RouteFeature;
+						IJRtePipePathFeat pipePathFeat = (IJRtePipePathFeat)COMConverters.ConvertBOToCOMBO(businessObject);
+						if (routeFeature != null && pipePathFeat != null)
 						{
-							RouteFeature routeFeature = alongLegFeature as RouteFeature;
-							IJRtePipePathFeat pipePathFeat = (IJRtePipePathFeat)COMConverters.ConvertBOToCOMBO(alongLegFeature);
-							
-							foreach(RoutePart part in routeFeature.Parts)
+							if(routeFeature.Parts != null)
 							{
-								Type type = part.GetType();
-								if (type.Name == "PipeInstrument" || type.Name == "PipeSpecialty")
-								{	
-									dataObject.PartOID = part.ObjectID; 
-									dataObject.PartName = part.Name;
-									dataObject.OBJType = type.Name;
-									dataObject.FeatOID = routeFeature.ObjectID;
-									dataObject.Tag = pipePathFeat.Tag;
-									dataObject.TagAvailable = DataProvider.Instance.CheckTagAvailable(dataObject.PartName);
-									dataObject.RunOID = routeFeature.Run.ObjectID;
-									dataObject.RunName = routeFeature.Run.Name;
-									BusinessObject pipeLine = (BusinessObject)routeFeature.Run.SystemParent;
-									dataObject.LineOID = pipeLine.ObjectID;
-									dataObject.LineName = routeFeature.Run.SystemParent.ToString();
+								foreach (RoutePart part in routeFeature.Parts)
+								{
+									if (part.GetPorts(Ingr.SP3D.Common.Middle.PortType.All).Count >= 2)
+									{
+										Type type = part.GetType();
+										if (type.Name == "PipeInstrument" || type.Name == "PipeSpecialty")
+										{
+											dataObject.PartOID = part.ObjectID;
+											dataObject.PartName = part.Name;
+											dataObject.OBJType = type.Name;
+											dataObject.FeatOID = routeFeature.ObjectID;
+											dataObject.Tag = pipePathFeat.Tag;
+											dataObject.TagAvailable = DataProvider.Instance.CheckTagAvailable(dataObject.PartName);
+											dataObject.RunOID = routeFeature.Run.ObjectID;
+											dataObject.RunName = routeFeature.Run.Name;
+											BusinessObject pipeLine = (BusinessObject)routeFeature.Run.SystemParent;
+											dataObject.LineOID = pipeLine.ObjectID;
+											dataObject.LineName = routeFeature.Run.SystemParent.ToString();
 
-									dataObjectByLoadWorkspaceList.Add(dataObject);
+											dataObjectByLoadWorkspaceList.Add(dataObject);
+										}
+									}
 								}
 							}
 						}
@@ -369,6 +341,9 @@ namespace OnCore_Replacement.Views
 				{
 					MessageBox.Show("Please select type load data", "OnCore : Err load data replace");
 				}
+				btnFilterAll.Checked = true;
+				btnFilterSuccess.Checked = false;
+				btnFilterFail.Checked = false;
 			}
 			catch (Exception ex)
 			{
@@ -460,9 +435,10 @@ namespace OnCore_Replacement.Views
 
 		//
 		// Summary:
-		//    Get route part from OID route feat and add notes, name for route part
-		private void GetRoutePartFromOIDRoutFeatAndAddName(string sOIDRouteFeat, string sName)
+		//    Get Oid part from feat
+		private string GetRoutePartFromOIDRoutFeat(string sOIDRouteFeat)
 		{
+			string sOIDRoutePart = default;
 			BusinessObject oBo = null;
 			if (sOIDRouteFeat.Contains("}"))
 			{
@@ -491,132 +467,112 @@ namespace OnCore_Replacement.Views
 
 						if (result != null)
 						{
-							string sOIDRoutePart = dt.Rows[result.RowIndex][0].ToString();
-							GetObjByOID("{" + sOIDRoutePart + "}", out oBo);
-							if (oBo is RoutePart)
-							{
-								RoutePart oRoutePart = (RoutePart)oBo;
-								if (oRoutePart != null)
-								{
-									oRoutePart.SetUserDefinedName(sName);
-								}
-
-							}
+							 sOIDRoutePart = dt.Rows[result.RowIndex][0].ToString();
 						}
 					}
 
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.Message, "OnCore : Err find and add Note into Tag");
+					MessageBox.Show(ex.Message, "OnCore : Err find route part from feature error");
 				}
 
 			}
-
+			return sOIDRoutePart;
 		}
+
+		//
+		// Summary:
+		//    Get route part from OID route feat add name for route part
+		private void GetRoutePartFromOIDRoutFeatAndAddName(string sOIDRouteFeat, string sName)
+		{
+			try
+			{
+				string sOIDRoutePart = GetRoutePartFromOIDRoutFeat(sOIDRouteFeat);
+				GetObjByOID("{" + sOIDRoutePart + "}", out BusinessObject oBo);
+				if (oBo is RoutePart)
+				{
+					RoutePart oRoutePart = (RoutePart)oBo;
+					if (oRoutePart != null)
+					{
+						oRoutePart.SetUserDefinedName(sName);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "OnCore : Err find and add Note into Tag");
+			}
+		}
+
+		//
+		// Summary:
+		//    Get route part from OID route feat and add notes new part
 		private void GetRoutePartFromOIDRoutFeatAndAddNote(string  sOIDRouteFeat, List<DataNote> oBONote)
 		{
 			BusinessObject oBo = null;
-			if (sOIDRouteFeat.Contains("}"))
+			string sOIDRoutePart = GetRoutePartFromOIDRoutFeat(sOIDRouteFeat);
+			GetObjByOID("{" + sOIDRoutePart + "}", out oBo);
+			if (oBo is RoutePart)
 			{
-				GetObjByOID(sOIDRouteFeat, out oBo);
-			}
-			else
-			{
-				GetObjByOID("{" + sOIDRouteFeat + "}", out oBo);
-			}
-			if (oBo is RouteFeature)
-			{
-				try
+				RoutePart oRoutePart = (RoutePart)oBo;
+				foreach (DataNote dataNote in oBONote)
 				{
-					DataTable dt = DataProvider.Instance.LoadDataOIDObject();
-					if (dt != null)
+					Note oNote = new Note(oRoutePart);
+					Ingr.SP3D.Common.Middle.Services.Model oModel = MiddleServiceProvider.SiteMgr.ActiveSite.ActivePlant.PlantModel;
+					CodelistItem oCLI = default;
+					switch (dataNote.NotePurpose)
 					{
-						string targetValueOID = Regex.Replace(oBo.ObjectID.ToLower(), "[{}]", "");
-
-						var query = from row in dt.AsEnumerable()
-									let columnIndex = dt.Columns["tbfeatOid"].Ordinal
-									let columnValue = row[columnIndex]?.ToString()
-									where columnValue == targetValueOID
-									select new { RowIndex = dt.Rows.IndexOf(row), Value = targetValueOID };
-
-						var result = query.FirstOrDefault();
-
-						if (result!= null)
-						{
-							string sOIDRoutePart = dt.Rows[result.RowIndex][0].ToString();
-							GetObjByOID("{" + sOIDRoutePart + "}", out oBo);
-							if (oBo is RoutePart)
-							{
-								RoutePart oRoutePart = (RoutePart)oBo;
-								foreach (DataNote dataNote in oBONote) 
-								{
-									Note oNote = new Note(oRoutePart);
-									Ingr.SP3D.Common.Middle.Services.Model oModel = MiddleServiceProvider.SiteMgr.ActiveSite.ActivePlant.PlantModel;
-									CodelistItem oCLI = default;
-									switch (dataNote.NotePurpose)
-									{
-										case 0:
-											break;
-										case 1:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.General));
-											break;
-										case 2:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Design));
-											break;
-										case 3:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Fabrication));
-											break;
-										case 4:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Installation));
-											break;
-										case 5:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.OperationandMaintenance));
-											break;
-										case 6:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Inspection));
-											break;
-										case 7:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Remark));
-											break;
-										case 8:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.MaterialofConstruction));
-											break;
-										case 9:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.DesignReview));
-											break;
-										case 10:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.PipingSpecificationnote));
-											break;
-										case 11:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Justification));
-											break;
-										case 12:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Procurement));
-											break;
-										case 13:
-											oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Standardnote));
-											break;
-									}
-									
-									if (oCLI != default)
-									{ oNote.SetPropertyValue(oCLI, "IJGeneralNote", "Purpose"); }
-									
-									oNote.SetPropertyValue(dataNote.NoteText, "IJGeneralNote", "Text");
-									oNote.SetPropertyValue(dataNote.NoteName, "IJGeneralNote", "Name");
-								}
-							}	
-						}
+						case 0:
+							break;
+						case 1:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.General));
+							break;
+						case 2:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Design));
+							break;
+						case 3:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Fabrication));
+							break;
+						case 4:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Installation));
+							break;
+						case 5:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.OperationandMaintenance));
+							break;
+						case 6:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Inspection));
+							break;
+						case 7:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Remark));
+							break;
+						case 8:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.MaterialofConstruction));
+							break;
+						case 9:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.DesignReview));
+							break;
+						case 10:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.PipingSpecificationnote));
+							break;
+						case 11:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Justification));
+							break;
+						case 12:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Procurement));
+							break;
+						case 13:
+							oCLI = oModel.MetadataMgr.GetCodelistInfo("NotePurpose", "CMNSCH").GetCodelistItem(DataNotePurposeHelper.GetDescription(DataNotePurpose.Standardnote));
+							break;
 					}
-					
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show(ex.Message, "OnCore : Err find and add Note into Tag");
-				}
 
+					if (oCLI != default)
+					{ oNote.SetPropertyValue(oCLI, "IJGeneralNote", "Purpose"); }
+
+					oNote.SetPropertyValue(dataNote.NoteText, "IJGeneralNote", "Text");
+					oNote.SetPropertyValue(dataNote.NoteName, "IJGeneralNote", "Name");
+				}
 			}
-
 		}
 
 		//
@@ -687,7 +643,7 @@ namespace OnCore_Replacement.Views
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(ex.Message, "OnCore : Err get object by OID");
+				
 			}
 		}
 
@@ -705,25 +661,28 @@ namespace OnCore_Replacement.Views
 		{
 			try
 			{
-				if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 1 && e.ColumnIndex != 3 && e.ColumnIndex != 4
-					&& e.ColumnIndex != 6 && e.ColumnIndex != 7 && e.ColumnIndex != 9 && e.ColumnIndex != 11)
+				if (e.RowIndex != -1 && e.ColumnIndex != -1)
 				{
-					if (dgvDataReplacement.Rows[e.RowIndex].DefaultCellStyle.BackColor != Color.Red)
+					if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 1 && e.ColumnIndex != 3 && e.ColumnIndex != 4
+					&& e.ColumnIndex != 6 && e.ColumnIndex != 7 && e.ColumnIndex != 9 && e.ColumnIndex != 11)
 					{
-						ClearHighlightElements();
-						string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-						SelectObjectWhenDoubleClickDGV(sOID);
-					}	
-					else
-					{
-						if (e.ColumnIndex != 5 && e.ColumnIndex != 2)
+						if (dgvDataReplacement.Rows[e.RowIndex].DefaultCellStyle.BackColor != Color.FromArgb(255, 102, 102))
 						{
 							ClearHighlightElements();
 							string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
 							SelectObjectWhenDoubleClickDGV(sOID);
-						}	
-					}	
-				}
+						}
+						else
+						{
+							if (e.ColumnIndex != 2)
+							{
+								ClearHighlightElements();
+								string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+								SelectObjectWhenDoubleClickDGV(sOID);
+							}
+						}
+					}
+				}	
 			}
 			catch (Exception ex)
 			{
@@ -748,7 +707,7 @@ namespace OnCore_Replacement.Views
 					cell.ReadOnly = true;
 					row.DefaultCellStyle.BackColor = Color.FromArgb(185, 186, 189);
 				}
-			}	
+			}
 		}
 
 		//
@@ -851,6 +810,67 @@ namespace OnCore_Replacement.Views
 			//	//circularProgressBar1.Text = "Please Wait ....";
 			//	//circularProgressBar1.Value = i;
 			//});
+		}
+
+		//
+		// Summary:
+		//    Fuc filter according status
+		private void btnFilterDgv_Click(object sender, EventArgs e)
+		{
+			filterContextMenu.Show(this);
+		}
+
+		private void filterContextMenu_Closing(object sender, CancelEventArgs e)
+		{
+			
+		}
+
+		private void btnFilterFail_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(btnFilterFail.Checked == true)
+			{
+				btnFilterAll.Checked = false;
+				btnFilterSuccess.Checked = false;
+			}
+			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+			{
+				if (row.Cells["tbStatus"].Value.ToString() != "Fail")
+				{
+					row.Visible = false;
+				}
+
+			}
+		}
+
+		private void btnFilterSuccess_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (btnFilterSuccess.Checked == true)
+			{
+				btnFilterAll.Checked = false;
+				btnFilterFail.Checked = false;
+			}
+			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+			{
+				if(row.Cells["tbStatus"].Value.ToString() != "Success")
+				{
+					row.Visible = false;
+				}
+				
+			}
+		}
+
+		private void btnFilterAll_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (btnFilterAll.Checked == true)
+			{
+				btnFilterFail.Checked = false;
+				btnFilterSuccess.Checked = false;
+
+				foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+				{
+					row.Visible = true;
+				}
+			}
 		}
 	}
 }

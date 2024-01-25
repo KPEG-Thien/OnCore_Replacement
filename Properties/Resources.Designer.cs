@@ -93,6 +93,16 @@ namespace OnCore_Replacement.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icons_drop_down_20 {
+            get {
+                object obj = ResourceManager.GetObject("icons-drop-down-20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap OnCore_Logo {
             get {
                 object obj = ResourceManager.GetObject("OnCore_Logo", resourceCulture);
