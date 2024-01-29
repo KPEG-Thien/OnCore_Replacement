@@ -167,7 +167,12 @@
     <None Include="Img\icon-excel-20.png" />
     <None Include="Img\icon-server-20.png" />
     <None Include="Img\icon-find-and-replace-20.png" />
+    <Content Include="Img\icons-check-20.png" />
+    <Content Include="Img\icons-close-16.png" />
+    <Content Include="Img\icons-color-20.png" />
+    <Content Include="Img\icons-database-daily-export-20.png" />
     <Content Include="Img\icons-drop-down-20.png" />
+    <Content Include="Img\icons-export-20.png" />
     <Content Include="Img\OnCore_Logo.jpg" />
     <None Include="packages.config" />
   </ItemGroup>

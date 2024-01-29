@@ -15,6 +15,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using ComponentFactory.Krypton.Toolkit;
 using Ingr.SP3D.Common.Client;
 using Ingr.SP3D.Common.Client.Services;
@@ -166,14 +169,14 @@ namespace OnCore_Replacement.Views
 						if (item.Status == "Success")
 						{
 							dgvDataReplacement.Rows[item.ID].Cells["tbStatus"].Value = "Success";
-							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = Color.FromArgb(102, 255, 102);
+							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = btnSuccessColor.SelectedColor; // Color.FromArgb(102, 255, 102);
 							GetObjByOID(item.NewFeatOID, out BusinessObject oBo);
 							HiliterObject(oBo);
 						}
 						else
 						{
 							dgvDataReplacement.Rows[item.ID].Cells["tbStatus"].Value = "Fail";
-							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = Color.FromArgb(255, 102, 102);
+							dgvDataReplacement.Rows[item.ID].DefaultCellStyle.BackColor = btnFailColor.SelectedColor;  //Color.FromArgb(255, 102, 102);
 						}
 					}
 				}
@@ -182,7 +185,7 @@ namespace OnCore_Replacement.Views
 			{
 				if (indexRow != -1)
 				{
-					dgvDataReplacement.Rows[indexRow].DefaultCellStyle.BackColor = Color.Red;
+					dgvDataReplacement.Rows[indexRow].DefaultCellStyle.BackColor = btnFailColor.SelectedColor; //Color.Red;
 					dgvDataReplacement.Rows[indexRow].Cells["tbStatus"].Value = "Fail";
 				}
 				MessageBox.Show(ex.Message, "OnCore : Err replace obj");
@@ -218,6 +221,18 @@ namespace OnCore_Replacement.Views
 
 			AllData.NameServer = oSP3DConnection.Server;
 			AllData.DbName = oPlantConnection.ParentPlant.ToString() + "_RDB";
+
+			kryptonBtnColorSuccess.StateCommon.Back.Color1 = btnSuccessColor.SelectedColor;
+			kryptonBtnColorSuccess.StateCommon.Back.Color2 = btnSuccessColor.SelectedColor;
+
+			kryptonBtnColorFail.StateCommon.Back.Color1 = btnFailColor.SelectedColor;
+			kryptonBtnColorFail.StateCommon.Back.Color2 = btnFailColor.SelectedColor;
+
+			kryptonBtnColorAvailable.StateCommon.Back.Color1 = btnAvailableColor.SelectedColor;
+			kryptonBtnColorAvailable.StateCommon.Back.Color2 = btnAvailableColor.SelectedColor;
+
+			kryptonBtnColorUnavailable.StateCommon.Back.Color1 = btnUnavailableColor.SelectedColor;
+			kryptonBtnColorUnavailable.StateCommon.Back.Color2 = btnUnavailableColor.SelectedColor;
 		}
 
 		//
@@ -264,7 +279,7 @@ namespace OnCore_Replacement.Views
 							}
 							for (int i = 0; i < dt.Rows.Count; i++)
 							{
-								dgvDataReplacement.Rows.Add(0, "---", dt.Rows[i][0], dt.Rows[i][1], dt.Rows[i][2], dt.Rows[i][3], dt.Rows[i][4], dt.Rows[i][5], dt.Rows[i][6], dt.Rows[i][7], dt.Rows[i][8], dt.Rows[i][9]);
+								dgvDataReplacement.Rows.Add(0, "---", 0, dt.Rows[i][0], dt.Rows[i][1], dt.Rows[i][2], dt.Rows[i][3], dt.Rows[i][4], dt.Rows[i][5], dt.Rows[i][6], dt.Rows[i][7], dt.Rows[i][8], dt.Rows[i][9]);
 
 							}
 						}
@@ -327,7 +342,7 @@ namespace OnCore_Replacement.Views
 						}
 						for (int i = 0; i < dataObjectByLoadWorkspaceList.Count; i++)
 						{
-							dgvDataReplacement.Rows.Add(0, "---", dataObjectByLoadWorkspaceList[i].PartOID, dataObjectByLoadWorkspaceList[i].PartName, dataObjectByLoadWorkspaceList[i].OBJType, dataObjectByLoadWorkspaceList[i].FeatOID
+							dgvDataReplacement.Rows.Add(0, "---", 0, dataObjectByLoadWorkspaceList[i].PartOID, dataObjectByLoadWorkspaceList[i].PartName, dataObjectByLoadWorkspaceList[i].OBJType, dataObjectByLoadWorkspaceList[i].FeatOID
 								,dataObjectByLoadWorkspaceList[i].Tag, dataObjectByLoadWorkspaceList[i].TagAvailable, dataObjectByLoadWorkspaceList[i].RunOID, dataObjectByLoadWorkspaceList[i].RunName, dataObjectByLoadWorkspaceList[i].LineOID, dataObjectByLoadWorkspaceList[i].LineName);
 
 						}
@@ -341,6 +356,7 @@ namespace OnCore_Replacement.Views
 				{
 					MessageBox.Show("Please select type load data", "OnCore : Err load data replace");
 				}
+
 				btnFilterAll.Checked = true;
 				btnFilterSuccess.Checked = false;
 				btnFilterFail.Checked = false;
@@ -510,6 +526,8 @@ namespace OnCore_Replacement.Views
 		//    Get route part from OID route feat and add notes new part
 		private void GetRoutePartFromOIDRoutFeatAndAddNote(string  sOIDRouteFeat, List<DataNote> oBONote)
 		{
+			//If you want to close the function add note for new part. Please convert the content below into a comment
+			///////////////////////////////////////////////////////////////////////////////////////////////////
 			BusinessObject oBo = null;
 			string sOIDRoutePart = GetRoutePartFromOIDRoutFeat(sOIDRouteFeat);
 			GetObjByOID("{" + sOIDRoutePart + "}", out oBo);
@@ -573,6 +591,7 @@ namespace OnCore_Replacement.Views
 					oNote.SetPropertyValue(dataNote.NoteName, "IJGeneralNote", "Name");
 				}
 			}
+			///////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 
 		//
@@ -647,13 +666,6 @@ namespace OnCore_Replacement.Views
 			}
 		}
 
-		private void btnExportData_Click(object sender, EventArgs e)
-		{
-			
-			
-
-		}
-
 		//
 		// Summary:
 		//    Fuc Hilight object when double click on data grid view 
@@ -663,10 +675,10 @@ namespace OnCore_Replacement.Views
 			{
 				if (e.RowIndex != -1 && e.ColumnIndex != -1)
 				{
-					if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 1 && e.ColumnIndex != 3 && e.ColumnIndex != 4
-					&& e.ColumnIndex != 6 && e.ColumnIndex != 7 && e.ColumnIndex != 9 && e.ColumnIndex != 11)
+					if (dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex] != null && e.ColumnIndex != 0 && e.ColumnIndex != 1 && e.ColumnIndex != 2 && e.ColumnIndex != 4 && e.ColumnIndex != 5
+					&& e.ColumnIndex != 7 && e.ColumnIndex != 8 && e.ColumnIndex != 10 && e.ColumnIndex != 12)
 					{
-						if (dgvDataReplacement.Rows[e.RowIndex].DefaultCellStyle.BackColor != Color.FromArgb(255, 102, 102))
+						if (dgvDataReplacement.Rows[e.RowIndex].DefaultCellStyle.BackColor != btnUnavailableColor.SelectedColor)
 						{
 							ClearHighlightElements();
 							string sOID = dgvDataReplacement.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
@@ -705,7 +717,11 @@ namespace OnCore_Replacement.Views
 					chkCell.FlatStyle = FlatStyle.Flat;
 					chkCell.Style.ForeColor = Color.DarkGray;
 					cell.ReadOnly = true;
-					row.DefaultCellStyle.BackColor = Color.FromArgb(185, 186, 189);
+					row.DefaultCellStyle.BackColor = btnUnavailableColor.SelectedColor;//Color.FromArgb(185, 186, 189);
+				}
+				else
+				{
+					row.DefaultCellStyle.BackColor = btnAvailableColor.SelectedColor;
 				}
 			}
 		}
@@ -831,6 +847,10 @@ namespace OnCore_Replacement.Views
 			{
 				btnFilterAll.Checked = false;
 				btnFilterSuccess.Checked = false;
+				foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+				{
+					row.Visible = true;
+				}
 			}
 			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
 			{
@@ -848,6 +868,10 @@ namespace OnCore_Replacement.Views
 			{
 				btnFilterAll.Checked = false;
 				btnFilterFail.Checked = false;
+				foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+				{
+					row.Visible = true;
+				}
 			}
 			foreach (DataGridViewRow row in dgvDataReplacement.Rows)
 			{
@@ -871,6 +895,150 @@ namespace OnCore_Replacement.Views
 					row.Visible = true;
 				}
 			}
+		}
+
+		//
+		// Summary:
+		//    Fuc setting color
+		private void dgvDataReplacement_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				panelSettingColor.Visible = true;
+			}
+		}
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			panelSettingColor.Visible = false;
+
+			kryptonBtnColorSuccess.StateCommon.Back.Color1 = btnSuccessColor.SelectedColor;
+			kryptonBtnColorSuccess.StateCommon.Back.Color2 = btnSuccessColor.SelectedColor;
+
+			kryptonBtnColorFail.StateCommon.Back.Color1 = btnFailColor.SelectedColor;
+			kryptonBtnColorFail.StateCommon.Back.Color2 = btnFailColor.SelectedColor;
+
+			kryptonBtnColorAvailable.StateCommon.Back.Color1 = btnAvailableColor.SelectedColor;
+			kryptonBtnColorAvailable.StateCommon.Back.Color2 = btnAvailableColor.SelectedColor;
+
+			kryptonBtnColorUnavailable.StateCommon.Back.Color1 = btnUnavailableColor.SelectedColor;
+			kryptonBtnColorUnavailable.StateCommon.Back.Color2 = btnUnavailableColor.SelectedColor;
+		}
+
+		//
+		// Summary:
+		//    Fuc save and load information check status
+		private void btnExportData_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				SaveFileDialog saveFileDialog = new SaveFileDialog();
+				saveFileDialog.Filter = "XML file (*.xml)|*.xml|All (*.*)|*.*";
+				
+				if (saveFileDialog.ShowDialog() == DialogResult.OK)
+				{
+					string filePath = saveFileDialog.FileName;
+					using (XmlWriter writer = XmlWriter.Create(filePath))
+					{
+						writer.WriteStartDocument();
+						writer.WriteStartElement("DataCheckStatus");
+
+						foreach (DataGridViewRow row in dgvDataReplacement.Rows)
+						{
+							if (row.Cells["tbStatus"].Value.ToString() != "---")
+							{
+								writer.WriteStartElement("Table");
+								foreach (DataGridViewColumn column in dgvDataReplacement.Columns)
+								{
+									if (column.Index == 1 || column.Index == 2 || column.Index == 3)
+									{
+										string oHeaderText = column.HeaderText;
+										oHeaderText = oHeaderText.Replace(" ", string.Empty);
+										writer.WriteElementString(oHeaderText, row.Cells[column.Index].Value.ToString());
+									}
+								}
+								writer.WriteEndElement();
+							}
+						}
+
+						writer.WriteEndElement();
+						writer.WriteEndDocument();
+					}
+				}
+
+				MessageBox.Show("Export Data Success", "OnCore: Export Data");
+			}
+			catch (Exception ex) {
+				MessageBox.Show(ex.Message, "OnCore: Err export data");
+			}
+			
+
+		}
+		private void LoadDataCheckStatusIntoDgv(string filePath)
+		{
+			XmlDocument xmlDoc = new XmlDocument();
+
+			if (File.Exists(filePath))
+			{
+				xmlDoc.Load(filePath);
+				XmlNodeList dataCheckStatusNodes = xmlDoc.SelectNodes("/DataCheckStatus/Table");
+				if (dataCheckStatusNodes != null)
+				{
+					foreach (XmlNode dataCheckStatusNode in dataCheckStatusNodes)
+					{
+						string status = GetNodeValue(dataCheckStatusNode, "Status");
+						string checkStatus = GetNodeValue(dataCheckStatusNode, "CheckStatus");
+						string partOID = GetNodeValue(dataCheckStatusNode, "PartOID");
+						if (cbSelectOptionLoadData.SelectedItem.ToString() == "Workspace")
+						{
+							partOID = "{" + GetNodeValue(dataCheckStatusNode, "PartOID").ToUpper() + "}";
+						}
+						else
+						{ partOID = GetNodeValue(dataCheckStatusNode, "PartOID").ToLower(); }	
+						var CheckOidInColumn = dgvDataReplacement.Rows.Cast<DataGridViewRow>()
+								.FirstOrDefault(row => row.Cells["tbpartOid1"].Value != null && row.Cells["tbpartOid1"].Value.ToString() == partOID);
+						if (CheckOidInColumn != null) 
+						{
+							dgvDataReplacement.Rows[CheckOidInColumn.Index].Cells["tbStatus"].Value = status;
+							if (checkStatus != "0")
+							{ dgvDataReplacement.Rows[CheckOidInColumn.Index].Cells["tbCheckStatus1"].Value = Convert.ToBoolean(checkStatus); }
+
+							switch (status) 
+							{
+								case "Success":
+									{
+										dgvDataReplacement.Rows[CheckOidInColumn.Index].DefaultCellStyle.BackColor = btnSuccessColor.SelectedColor; break;
+									}
+								case "Fail":
+									{
+										dgvDataReplacement.Rows[CheckOidInColumn.Index].DefaultCellStyle.BackColor = btnFailColor.SelectedColor; break;
+									}
+							}
+						}
+					}
+				}
+			}
+		}
+		private static string GetNodeValue(XmlNode parentNode, string nodeName)
+		{
+			XmlNode node = parentNode.SelectSingleNode(nodeName);
+			return node?.InnerText ?? "N/A";
+		}
+		private void btnLoadDataStatus_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				OpenFileDialog openFileDialog = new OpenFileDialog();
+				openFileDialog.Filter = " XML File (*.xml)|*.xml|All (*.*)|*.*; ";
+				openFileDialog.ShowDialog();
+				string filePath = openFileDialog.FileName;
+				if (dgvDataReplacement.Rows.Count > 0) { LoadDataCheckStatusIntoDgv(filePath); }
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "OnCore: Load Status fail");
+			}
+
 		}
 	}
 }

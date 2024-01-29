@@ -93,9 +93,59 @@ namespace OnCore_Replacement.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icons_check_20 {
+            get {
+                object obj = ResourceManager.GetObject("icons-check-20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons_close_16 {
+            get {
+                object obj = ResourceManager.GetObject("icons-close-16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons_database_daily_export_20 {
+            get {
+                object obj = ResourceManager.GetObject("icons-database-daily-export-20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons_database_daily_export_201 {
+            get {
+                object obj = ResourceManager.GetObject("icons-database-daily-export-201", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons_drop_down_20 {
             get {
                 object obj = ResourceManager.GetObject("icons-drop-down-20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons_export_20 {
+            get {
+                object obj = ResourceManager.GetObject("icons-export-20", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
